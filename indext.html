@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday! 🎂</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ffe0ec, #e8ddff, #d9f3ff);
+    color: #59445f;
+}
+
+.card {
+    width: min(90%, 430px);
+    padding: 40px 25px;
+    text-align: center;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 15px 45px rgba(120,80,130,0.15);
+    position: relative;
+    z-index: 2;
+    animation: appear 1s ease;
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cake {
+    font-size: 75px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+h1 {
+    font-size: clamp(28px, 8vw, 38px);
+    margin: 15px 0;
+    color: #c16c9e;
+}
+
+.name {
+    color: #9874c9;
+}
+
+.subtitle {
+    font-size: 15px;
+    margin-bottom: 22px;
+    color: #8c7890;
+}
+
+.message {
+    line-height: 1.8;
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+
+button {
+    border: none;
+    border-radius: 50px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #ee9ac5, #ad91e8);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(180,120,190,.25);
+    transition: .3s;
+}
+
+button:hover {
+    transform: scale(1.06);
+}
+
+#surprise {
+    display: none;
+    margin-top: 22px;
+    line-height: 1.7;
+    animation: appear .6s ease;
+}
+
+.heart {
+    position: fixed;
+    bottom: -30px;
+    font-size: 20px;
+    opacity: .5;
+    animation: floatUp linear infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    to {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+@media(max-width: 480px) {
+    .card {
+        padding: 32px 22px;
+    }
+    .message {
+        font-size: 14px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="card">
+    <div class="cake">🎂</div>
+
+    <h1>Happy Birthday!</h1>
+
+    <h2 class="name">Dear Someone ♡</h2>
+
+    <p class="subtitle">Today is all about you ✨</p>
+
+    <p class="message">
+        Wishing you a day filled with happiness,
+        laughter, and beautiful memories.
+        May this new chapter of your life bring
+        you endless blessings, exciting adventures,
+        and everything your heart wishes for.
+        <br><br>
+        Keep shining and never stop being you.
+        You deserve all the beautiful things
+        life has to offer. 💗
+    </p>
+
+    <button onclick="celebrate()">
+        Open Your Surprise 🎁
+    </button>
+
+    <div id="surprise">
+        <h2>🎉 Surprise! 🎉</h2>
+        <p>
+            Here's to another year of wonderful moments,
+            unexpected happiness, and unforgettable memories!
+            <br>
+            <b>Have the sweetest birthday ever! 💕</b>
+        </p>
+    </div>
+</div>
+
+<script>
+// Floating hearts
+const hearts = ["💗", "💕", "♡", "✨", "🌸"];
+
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+    heart.style.left = Math.random()*100 + "vw";
+    heart.style.animationDuration = (5 + Math.random()*5) + "s";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 10000);
+}
+
+setInterval(createHeart, 600);
+
+// Confetti animation
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+function celebrate() {
+    document.getElementById("surprise").style.display = "block";
+
+    for(let i = 0; i < 180; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: -20 - Math.random() * canvas.height,
+            size: Math.random() * 8 + 4,
+            speed: Math.random() * 4 + 2,
+            angle: Math.random() * 6,
+            spin: Math.random() * 0.2 - 0.1,
+            color: ["#ff91bd", "#b89aff", "#ffd166",
+                    "#8de4d5", "#ffb4a2"][Math.floor(Math.random()*5)]
+        });
+    }
+}
+
+function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+        p.y += p.speed;
+        p.x += Math.sin(p.angle) * 2;
+        p.angle += p.spin;
+
+        ctx.fillStyle = p.color;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+        ctx.restore();
+
+        if(p.y > canvas.height + 20) {
+            particles.splice(i, 1);
+        }
+    });
+
+    requestAnimationFrame(animateConfetti);
+}
+
+animateConfetti();
+</script>
+
+</body>
+</html>
